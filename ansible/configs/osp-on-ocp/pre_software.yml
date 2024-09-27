@@ -54,39 +54,39 @@
       ansible.builtin.include_role:
         name: bastion-student-user
 
-    - name: Write Route53 credentials into /root/.aws/credentials
-      ansible.builtin.blockinfile:
-        dest: "/root/.aws/credentials"
-        create: true
-        owner: "root"
-        mode: u=rw,g=,o=
-        content: |
-          [default]
-          aws_access_key_id={{ route53_aws_access_key_id }}
-          aws_secret_access_key={{ route53_aws_secret_access_key }}
+    # - name: Write Route53 credentials into /root/.aws/credentials
+    #   ansible.builtin.blockinfile:
+    #     dest: "/root/.aws/credentials"
+    #     create: true
+    #     owner: "root"
+    #     mode: u=rw,g=,o=
+    #     content: |
+    #       [default]
+    #       aws_access_key_id={{ route53_aws_access_key_id }}
+    #       aws_secret_access_key={{ route53_aws_secret_access_key }}
 
-    - name: Request Both Let's Encrypt Static and Wildcard Certificates
-      ansible.builtin.include_role:
-        name: host-lets-encrypt-certs-certbot
-      vars:
-        _certbot_domain: "api.{{ guid }}.{{ cluster_dns_zone }}"
-        _certbot_wildcard_domain: "*.apps.{{ guid }}.{{ cluster_dns_zone }}"
-        _certbot_production: true
-        _certbot_dns_provider: "route53"
-        _certbot_remote_dir: "/root/"
-        _certbot_cache_cert_file: "/tmp/server.cert"
-        _certbot_cache_key_file: "/tmp/server.key"
-        _certbot_cache_ca_file: "/tmp/server_ca.cer"
-        _certbot_cache_fullchain_file: "/tmp/fullchain.cer"
-        _certbot_cache_archive_file: "/tmp/certbot.tar.gz"
-        _certbot_renew_automatically: false
-        _certbot_force_issue: false
-        _certbot_user: "root"
+    # - name: Request Both Let's Encrypt Static and Wildcard Certificates
+    #   ansible.builtin.include_role:
+    #     name: host-lets-encrypt-certs-certbot
+    #   vars:
+    #     _certbot_domain: "api.{{ guid }}.{{ cluster_dns_zone }}"
+    #     _certbot_wildcard_domain: "*.apps.{{ guid }}.{{ cluster_dns_zone }}"
+    #     _certbot_production: true
+    #     _certbot_dns_provider: "route53"
+    #     _certbot_remote_dir: "/root/"
+    #     _certbot_cache_cert_file: "/tmp/server.cert"
+    #     _certbot_cache_key_file: "/tmp/server.key"
+    #     _certbot_cache_ca_file: "/tmp/server_ca.cer"
+    #     _certbot_cache_fullchain_file: "/tmp/fullchain.cer"
+    #     _certbot_cache_archive_file: "/tmp/certbot.tar.gz"
+    #     _certbot_renew_automatically: false
+    #     _certbot_force_issue: false
+    #     _certbot_user: "root"
 
-    - name: Remove credentials once LE certs complete
-      ansible.builtin.file:
-        state: absent
-        path: "/root/.aws"
+    # - name: Remove credentials once LE certs complete
+    #   ansible.builtin.file:
+    #     state: absent
+    #     path: "/root/.aws"
 
     - name: Deploy base software
       ansible.builtin.include_role:
@@ -134,6 +134,7 @@
         --import --noautoconsole --vnc
         --network network=ocp4-flat --name legacy
         --cpu host,+vmx --boot bios.rebootTimeout=0
+      ignore_errors: true
 
 - name: Setup Bastion VM
   hosts: bastion-vm
